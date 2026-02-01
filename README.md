@@ -255,13 +255,13 @@ The server will start on `http://localhost:5000`
 
 ---
 
-### Text Generation Example 1 - Conservative (Low Temperature)
+### Text Generation Example 1 - Conservative
 
 ![Conservative Generation](screenshots/generation_conservative.png)
 
 ---
 
-### Text Generation Example 2 - Creative (High Temperature)
+### Text Generation Example 2 - Creative
 
 ![Creative Generation](screenshots/generation_creative.png)
 
