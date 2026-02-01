@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harry Potter Language Model</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f0f0f;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #1a1a1a;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+            border: 1px solid #2a2a2a;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            color: #e0e0e0;
+            padding: 40px 30px;
+            text-align: center;
+            border-bottom: 2px solid #3a3a3a;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #e0e0e0;
+            font-size: 1.05em;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="range"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #3a3a3a;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: #2a2a2a;
+            color: #e0e0e0;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #2ecc71;
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.2);
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+        }
+
+        .slider-value {
+            min-width: 50px;
+            text-align: center;
+            font-weight: 600;
+            color: #2ecc71;
+        }
+
+        .info-text {
+            font-size: 0.9em;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(46, 204, 113, 0.5);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #3a3a3a;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-container {
+            margin-top: 30px;
+            padding: 25px;
+            background: #2a2a2a;
+            border-radius: 12px;
+            border-left: 4px solid #2ecc71;
+            display: none;
+        }
+
+        .result-container.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #2ecc71;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .generated-text {
+            line-height: 1.8;
+            color: #e0e0e0;
+            font-size: 1.05em;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #3a3a3a;
+            border-top: 4px solid #2ecc71;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #3a2222;
+            border-left-color: #e74c3c;
+            color: #ff6b6b;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            font-size: 0.9em;
+            border-top: 1px solid #2a2a2a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Harry Potter Language Model</h1>
+            <p>Generate magical text with AI trained on Harry Potter novels</p>
+        </div>
+
+        <div class="content">
+            <form id="generateForm">
+                <div class="form-group">
+                    <label for="prompt">Enter your prompt:</label>
+                    <input 
+                        type="text" 
+                        id="prompt" 
+                        name="prompt" 
+                        placeholder="Harry Potter is..."
+                        required
+                    >
+                    <div class="info-text">Start your story and let the AI continue it!</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="maxLength">Maximum Length (tokens): <span id="lengthValue">100</span></label>
+                    <div class="slider-container">
+                        <input 
+                            type="range" 
+                            id="maxLength" 
+                            name="maxLength" 
+                            min="20" 
+                            max="200" 
+                            value="100"
+                        >
+                    </div>
+                    <div class="info-text">Control how long the generated text will be</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="temperature">Temperature (creativity): <span id="tempValue">0.7</span></label>
+                    <div class="slider-container">
+                        <input 
+                            type="range" 
+                            id="temperature" 
+                            name="temperature" 
+                            min="0.3" 
+                            max="1.5" 
+                            step="0.1" 
+                            value="0.7"
+                        >
+                    </div>
+                    <div class="info-text">Lower = more predictable, Higher = more creative</div>
+                </div>
+
+                <button type="submit" id="generateBtn">Generate Text</button>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <div>Generating magical text...</div>
+            </div>
+
+            <div class="result-container" id="resultContainer">
+                <div class="result-label">Generated Text:</div>
+                <div class="generated-text" id="generatedText"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><strong>Assignment 2</strong> | Student ID: st125981</p>
+            <p>Artificial Intelligence - Natural Language Understanding</p>
+        </div>
+    </div>
+
+    <script>
+        // Update slider value displays
+        const maxLengthSlider = document.getElementById('maxLength');
+        const lengthValue = document.getElementById('lengthValue');
+        const temperatureSlider = document.getElementById('temperature');
+        const tempValue = document.getElementById('tempValue');
+
+        maxLengthSlider.addEventListener('input', function() {
+            lengthValue.textContent = this.value;
+        });
+
+        temperatureSlider.addEventListener('input', function() {
+            tempValue.textContent = this.value;
+        });
+
+        // Form submission
+        document.getElementById('generateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const prompt = document.getElementById('prompt').value;
+            const maxLength = document.getElementById('maxLength').value;
+            const temperature = document.getElementById('temperature').value;
+
+            const generateBtn = document.getElementById('generateBtn');
+            const loading = document.getElementById('loading');
+            const resultContainer = document.getElementById('resultContainer');
+            const generatedText = document.getElementById('generatedText');
+
+            // Show loading, hide results
+            generateBtn.disabled = true;
+            loading.classList.add('show');
+            resultContainer.classList.remove('show');
+            resultContainer.classList.remove('error');
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        max_length: parseInt(maxLength),
+                        temperature: parseFloat(temperature)
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    generatedText.textContent = data.generated_text;
+                    resultContainer.classList.add('show');
+                } else {
+                    throw new Error(data.error || 'Generation failed');
+                }
+            } catch (error) {
+                generatedText.textContent = 'Error: ' + error.message;
+                resultContainer.classList.add('show', 'error');
+            } finally {
+                generateBtn.disabled = false;
+                loading.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>
