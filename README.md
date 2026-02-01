@@ -9,14 +9,6 @@
 
 This project implements a character-level LSTM language model trained on Harry Potter novels to generate contextually relevant text. The project includes a complete training pipeline and an interactive web application for text generation.
 
-### Key Features
-
-- **LSTM-based Language Model** with multi-layer architecture
-- **Complete Training Pipeline** with preprocessing and evaluation
-- **Interactive Web Application** for real-time text generation
-- **Performance Monitoring** with perplexity metrics and visualization
-- **Adjustable Generation Parameters** (temperature, length)
-
 ---
 
 ## Assignment Tasks Completed
