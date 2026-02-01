@@ -11,9 +11,7 @@ This project implements a character-level LSTM language model trained on Harry P
 
 ---
 
-## Assignment Tasks Completed
-
-### Task 1: Dataset Acquisition (1 point)
+### Task 1: Dataset Acquisition
 
 **Dataset:** Harry Potter Books
 
