@@ -159,7 +159,7 @@ The plots show:
 
 The model shows good learning progress with decreasing loss and perplexity. The gap between training and validation metrics indicates some overfitting, which is expected with a complex model on a literary dataset.
 
-### Task 3: Web Application Development (2 points)
+### Task 3: Web Application Development
 
 #### Application Features
 
